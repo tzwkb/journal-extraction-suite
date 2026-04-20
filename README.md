@@ -52,17 +52,23 @@ pip install -r requirements.txt
 
 **Configure API keys**
 
-Copy and edit the config file:
+Edit `config.py` and set your Gemini API keys:
 
-```bash
-cp config.example.yaml config.yaml
-```
+```python
+# PDF extraction
+PDF_API_KEY = "your-gemini-api-key"
+PDF_API_BASE_URL = "your-api-url"
+PDF_API_MODEL = "gemini-2.5-flash"
 
-Set your Gemini API key in `config.yaml`:
+# Translation
+TRANSLATION_API_KEY = "your-gemini-api-key"
+TRANSLATION_API_BASE_URL = "your-api-url"
+TRANSLATION_API_MODEL = "gemini-2.5-flash"
 
-```yaml
-api:
-  gemini_api_key: "YOUR_API_KEY"
+# HTML generation
+HTML_API_KEY = "your-gemini-api-key"
+HTML_API_BASE_URL = "your-api-url"
+HTML_API_MODEL = "gemini-2.5-flash"
 ```
 
 **Run**
@@ -71,7 +77,7 @@ api:
 python main.py
 ```
 
-Place input files in the configured input directory. The pipeline will process all PDF and DOCX files found there.
+Place input files in `input/`. The interactive menu will guide you through file selection, translation options, and output format choices.
 
 ---
 
@@ -80,11 +86,11 @@ Place input files in the configured input directory. The pipeline will process a
 ```
 journal-extraction-suite/
 ├── main.py                  # Entry point
-├── config.yaml              # Runtime configuration
-├── core/                    # Shared utilities, logging, config loader
+├── config.py                # All configuration constants and API settings
+├── core/                    # Logging, PDF utilities, JSON parsing
 ├── extractors/              # PDF and DOCX extraction modules
-├── processors/              # Deduplication, cleaning, image processing
-├── generators/              # Excel, HTML, PDF, DOCX output generators
+├── processors/              # Image processing, Vision API, translation
+├── generators/              # HTML, PDF, DOCX, Excel output generators
 ├── pipeline/                # Stage orchestration and checkpoint management
 ├── engines/
 │   ├── mineru/              # Alternative engine: MinerU-based extraction
@@ -92,26 +98,24 @@ journal-extraction-suite/
 └── docs/                    # Full documentation
 ```
 
-The root pipeline is the default engine. MinerU and BabelDoc are drop-in alternatives under `engines/`.
+The root pipeline is the default engine. MinerU and BabelDoc are self-contained alternatives under `engines/`.
 
 ---
 
 ## Configuration
 
-Key parameters in `config.yaml`:
+All configuration lives in `config.py`. Key parameters:
 
 | Parameter | Default | Description |
 |---|---|---|
-| `api.gemini_api_key` | — | Gemini API key (required) |
-| `processing.concurrent_files` | `20` | Parallel file workers |
-| `processing.concurrent_batches` | `100` | Parallel translation batches |
-| `image.mode` | `rule` | Image processing mode: `rule` or `vision` |
-| `image.min_size_kb` | `10` | Minimum image size to extract |
-| `image.min_width` | `400` | Minimum image width (px) |
-| `image.min_height` | `300` | Minimum image height (px) |
-| `output.formats` | `[excel, html, pdf, docx]` | Output formats to generate |
-| `output.dir` | `./output` | Output directory |
-| `pipeline.checkpoint_dir` | `./checkpoints` | Checkpoint storage path |
+| `PDF_API_KEY` | — | Gemini API key for extraction (required) |
+| `MAX_CONCURRENT_PDF_FILES` | `20` | Parallel file workers |
+| `MAX_WORKERS` | `100` | Parallel batch workers |
+| `PAGES_PER_BATCH` | `6` | PDF pages per extraction batch |
+| `ENABLE_VISION_API` | `False` | Use Vision API for image processing |
+| `IMAGE_MIN_FILE_SIZE` | `10240` | Minimum image size to extract (bytes) |
+| `IMAGE_MIN_WIDTH` | `400` | Minimum image width (px) |
+| `IMAGE_MIN_HEIGHT` | `300` | Minimum image height (px) |
 
 See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for the full parameter reference.
 
@@ -121,29 +125,12 @@ See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for the full parameter refere
 
 ```
 output/
-├── excel/
-│   └── articles.xlsx
-├── html/
-│   ├── index.html
-│   └── images/
-├── pdf/
-│   └── output.pdf
-└── docx/
-    └── output.docx
-```
-
-Checkpoints are stored separately under `checkpoints/` and allow resuming from any of the 11 pipeline stages.
-
----
-
-## Recovery Tools
-
-```bash
-# Resume from JSON cache after interruption
-python recover_progress_from_json.py
-
-# Check and fix leaked translation placeholders
-python check_and_fix_leaked_placeholders.py
+├── excel/          # Excel files (original + translated)
+├── html/           # HTML files with TOC, cover images, article images
+├── pdf/            # PDF files
+├── docx/           # DOCX files
+├── image/          # Extracted images per PDF
+└── json/           # Cached extraction data (used for resume)
 ```
 
 ---

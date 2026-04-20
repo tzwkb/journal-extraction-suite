@@ -1,0 +1,412 @@
+
+        /* CSS Version: 2.3 - 禁用清理逻辑，添加section间距 */
+        /* ✅ AI生成内容的段落间距样式 - 增强版 */
+        .article-content p,
+        .article p,
+        .main-content p,
+        article p {
+            margin-bottom: 1.2em;  /* 段落下方留白1.2倍字体大小 */
+        }
+        
+        .article-content p:last-child,
+        .article p:last-child,
+        .main-content > p:last-child,
+        article p:last-child {
+            margin-bottom: 0;  /* 最后一个段落不需要下边距 */
+        }
+        
+        /* ✅ blockquote引用块整体间距（增强版） */
+        .article-content blockquote,
+        .article blockquote,
+        .main-content blockquote,
+        article blockquote {
+            margin-top: 1.2em;      /* 引用块上方留白 */
+            margin-bottom: 1.8em;   /* 引用块下方留白（进一步增加）*/
+            padding: 15px 20px;     /* 内边距 */
+            border-left: 4px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        
+        .article-content blockquote:first-child,
+        .article blockquote:first-child,
+        .main-content blockquote:first-child,
+        article blockquote:first-child {
+            margin-top: 0;  /* 第一个引用块不需要上边距 */
+        }
+        
+        .article-content blockquote:last-child,
+        .article blockquote:last-child,
+        .main-content blockquote:last-child,
+        article blockquote:last-child {
+            margin-bottom: 0;  /* 最后一个引用块不需要下边距 */
+        }
+        
+        /* 确保blockquote内的段落也有适当间距 */
+        blockquote p {
+            margin-bottom: 0.8em;
+        }
+        
+        blockquote p:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* ✅ 列表整体间距（增强版） */
+        .article-content ul,
+        .article-content ol,
+        .article ul,
+        .article ol,
+        .main-content ul,
+        .main-content ol,
+        article ul,
+        article ol {
+            margin-bottom: 1.5em;  /* 列表下方留白（增加到1.5em）*/
+            margin-top: 0.8em;     /* 列表上方留白（增加到0.8em）*/
+        }
+        
+        .article-content ul:first-child,
+        .article-content ol:first-child,
+        .article ul:first-child,
+        .article ol:first-child,
+        .main-content ul:first-child,
+        .main-content ol:first-child,
+        article ul:first-child,
+        article ol:first-child {
+            margin-top: 0;  /* 第一个列表不需要上边距 */
+        }
+        
+        .article-content ul:last-child,
+        .article-content ol:last-child,
+        .article ul:last-child,
+        .article ol:last-child,
+        .main-content ul:last-child,
+        .main-content ol:last-child,
+        article ul:last-child,
+        article ol:last-child {
+            margin-bottom: 0;  /* 最后一个列表不需要下边距 */
+        }
+        
+        /* ✅ figure图片区域整体间距 */
+        .article-content figure,
+        .article figure,
+        .main-content figure,
+        article figure {
+            margin-top: 1.5em;      /* figure上方留白 */
+            margin-bottom: 1.8em;   /* figure下方留白（加大）*/
+        }
+        
+        .article-content figure:first-child,
+        .article figure:first-child,
+        .main-content figure:first-child,
+        article figure:first-child {
+            margin-top: 0;  /* 第一个figure不需要上边距 */
+        }
+        
+        .article-content figure:last-child,
+        .article figure:last-child,
+        .main-content figure:last-child,
+        article figure:last-child {
+            margin-bottom: 0;  /* 最后一个figure不需要下边距 */
+        }
+        
+        /* figure内的图片说明文字 */
+        .article-content figcaption,
+        .article figcaption,
+        .main-content figcaption,
+        article figcaption {
+            margin-top: 0.8em;
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+            line-height: 1.5;
+        }
+        
+        /* ✅ 特殊标签后紧跟的元素增加上边距（全面覆盖）*/
+        .article-content ul + p,
+        .article-content ol + p,
+        .article-content blockquote + p,
+        .article-content figure + p,
+        .article-content ul + blockquote,
+        .article-content ol + blockquote,
+        .article-content figure + blockquote,
+        .article-content blockquote + ul,
+        .article-content blockquote + ol,
+        .article-content figure + ul,
+        .article-content figure + ol,
+        .article ul + p,
+        .article ol + p,
+        .article blockquote + p,
+        .article figure + p,
+        .main-content ul + p,
+        .main-content ol + p,
+        .main-content blockquote + p,
+        .main-content figure + p,
+        article ul + p,
+        article ol + p,
+        article blockquote + p,
+        article figure + p {
+            margin-top: 0.8em;  /* 特殊标签后的元素额外上边距 */
+        }
+        
+        /* ✅ 列表项之间的间距 */
+        .article-content ul > li,
+        .article-content ol > li,
+        .article ul > li,
+        .article ol > li,
+        .main-content ul > li,
+        .main-content ol > li,
+        article ul > li,
+        article ol > li {
+            margin-bottom: 0.6em;  /* 列表项之间留白 */
+        }
+        
+        .article-content ul > li:last-child,
+        .article-content ol > li:last-child,
+        .article ul > li:last-child,
+        .article ol > li:last-child,
+        .main-content ul > li:last-child,
+        .main-content ol > li:last-child,
+        article ul > li:last-child,
+        article ol > li:last-child {
+            margin-bottom: 0;  /* 最后一个列表项不需要下边距 */
+        }
+        
+        /* ✅ 标题前后间距 */
+        .article-content h3,
+        .article h3,
+        .main-content h3,
+        article h3 {
+            margin-top: 2.5em;    /* 离上一段文字更远 */
+            margin-bottom: 0.1em; /* 紧贴下一段文字，几乎无空行 */
+            color: #333;
+            font-weight: 600;
+        }
+        
+        /* ✅ h3后面紧跟的p标签不要上边距 */
+        .article-content h3 + p,
+        .article h3 + p,
+        .main-content h3 + p,
+        article h3 + p,
+        .article-content h3 + .paragraph,
+        .article h3 + .paragraph,
+        .main-content h3 + .paragraph,
+        article h3 + .paragraph {
+            margin-top: 0 !important;  /* 强制移除p标签的默认上边距 */
+        }
+        
+        .article-content h4,
+        .article-content h5,
+        .article h4,
+        .article h5,
+        .main-content h4,
+        .main-content h5,
+        article h4,
+        article h5 {
+            margin-top: 1.5em;   /* 标题上方留白 */
+            margin-bottom: 0.8em; /* 标题下方留白 */
+        }
+        
+        /* ✅ h4/h5后面紧跟的p标签也不要上边距 */
+        .article-content h4 + p,
+        .article h4 + p,
+        .main-content h4 + p,
+        article h4 + p,
+        .article-content h5 + p,
+        .article h5 + p,
+        .main-content h5 + p,
+        article h5 + p {
+            margin-top: 0 !important;
+        }
+        
+        /* ✅ 只有article-content的直接第一个标题才不需要上边距 */
+        .article-content > h3:first-child,
+        .article-content > h4:first-child,
+        .article-content > h5:first-child,
+        .article > h3:first-child,
+        .article > h4:first-child,
+        .article > h5:first-child {
+            margin-top: 0;
+        }
+        
+        /* ✅ section内的h3保持正常间距（不被:first-child重置） */
+        .section > h3,
+        .section > h4,
+        .section > h5 {
+            margin-top: 2.5em;  /* 确保section内的标题保持上方间距 */
+        }
+        
+        /* ✅ section之间的间距（AI常把每个段落放在独立section中）*/
+        .article-content .section,
+        .article .section,
+        .main-content .section,
+        article .section {
+            margin-bottom: 1.5em;  /* section下方留白，确保段落间有空行 */
+        }
+        
+        .article-content .section:last-child,
+        .article .section:last-child,
+        .main-content .section:last-child,
+        article .section:last-child {
+            margin-bottom: 0;  /* 最后一个section不需要下边距 */
+        }
+        
+        /* ✅ 表格美化样式 */
+        .article-content table,
+        .article table,
+        .main-content table,
+        article table {
+            margin-top: 1.2em;    /* 表格上方留白 */
+            margin-bottom: 1.5em; /* 表格下方留白 */
+            width: 100%;
+            max-width: 100%;      /* 防止超框 */
+            border-collapse: collapse;
+            border-spacing: 0;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            border-radius: 4px;
+            overflow: hidden;
+            table-layout: auto;   /* 自动列宽，内容自适应 */
+            word-wrap: break-word; /* 长单词自动换行 */
+            word-break: break-word; /* 强制换行防止超框 */
+        }
+        
+        .article-content table:first-child,
+        .article table:first-child,
+        .main-content table:first-child,
+        article table:first-child {
+            margin-top: 0;
+        }
+        
+        .article-content table:last-child,
+        .article table:last-child,
+        .main-content table:last-child,
+        article table:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* 表头样式 */
+        .article-content table thead,
+        .article table thead,
+        .main-content table thead,
+        article table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .article-content table th,
+        .article table th,
+        .main-content table th,
+        article table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95em;
+            border: 1px solid rgba(255,255,255,0.2);
+            letter-spacing: 0.5px;
+            word-wrap: break-word;
+            word-break: break-word;
+            max-width: 300px;  /* 表头单元格最大宽度 */
+            overflow-wrap: break-word;
+        }
+        
+        /* 表格单元格样式 */
+        .article-content table td,
+        .article table td,
+        .main-content table td,
+        article table td {
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            line-height: 1.6;
+            vertical-align: top;
+            word-wrap: break-word;
+            word-break: break-word;
+            max-width: 300px;  /* 单元格最大宽度，防止超框 */
+            overflow-wrap: break-word;
+        }
+        
+        /* 确保表格容器不超框 */
+        .article-content,
+        .article,
+        .main-content,
+        article {
+            overflow-x: auto;  /* 如果表格真的太宽，显示横向滚动条 */
+        }
+        
+        /* 表格行斑马纹效果 */
+        .article-content table tbody tr:nth-child(odd),
+        .article table tbody tr:nth-child(odd),
+        .main-content table tbody tr:nth-child(odd),
+        article table tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        
+        .article-content table tbody tr:nth-child(even),
+        .article table tbody tr:nth-child(even),
+        .main-content table tbody tr:nth-child(even),
+        article table tbody tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+        
+        /* 表格行悬停效果 */
+        .article-content table tbody tr:hover,
+        .article table tbody tr:hover,
+        .main-content table tbody tr:hover,
+        article table tbody tr:hover {
+            background-color: #f0f4ff;
+            transition: background-color 0.2s ease;
+        }
+        
+        /* 表格外层包装，处理超宽表格 */
+        .article-content > table,
+        .article > table,
+        .main-content > table,
+        article > table {
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* iOS平滑滚动 */
+        }
+        
+        /* 表格响应式处理 */
+        @media screen and (max-width: 768px) {
+            .article-content table,
+            .article table,
+            .main-content table,
+            article table {
+                font-size: 0.85em;
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .article-content table th,
+            .article table th,
+            .main-content table th,
+            article table th,
+            .article-content table td,
+            .article table td,
+            .main-content table td,
+            article table td {
+                padding: 8px 10px;
+                max-width: none; /* 移动端不限制单元格宽度 */
+                white-space: nowrap; /* 防止过度换行 */
+            }
+        }
+        
+        /* PDF打印时的表格优化 */
+        @media print {
+            .article-content table,
+            .article table,
+            .main-content table,
+            article table {
+                page-break-inside: avoid;  /* 避免表格跨页断开 */
+                font-size: 0.9em;
+            }
+            
+            .article-content table th,
+            .article table th,
+            .main-content table th,
+            article table th {
+                background: #667eea !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }

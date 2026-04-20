@@ -1,0 +1,2 @@
+from extractors.pdf_extractor import PDFArticleExtractor
+from extractors.docx_extractor import DOCXArticleExtractor

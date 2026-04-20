@@ -1,0 +1,44 @@
+# ============================================
+# AI 期刊文章提取与翻译系统 - 依赖包
+# ============================================
+
+# PDF处理
+PyMuPDF>=1.23.0
+
+# 图片处理
+Pillow>=10.0.0  # 图片清洗、色彩分析
+numpy>=1.24.0   # 色彩丰富度计算
+
+# Excel和数据处理
+pandas>=2.0.0
+openpyxl>=3.1.0
+
+# HTTP请求（API调用）
+requests>=2.31.0
+
+# 进度条
+tqdm>=4.66.0
+
+# 打包工具（可选，仅在打包.exe时需要）
+pyinstaller>=6.0.0
+
+# ============================================
+# PDF生成 (从HTML转换)
+# ============================================
+# 方案1: Playwright (推荐，效果最好)
+# 安装步骤: pip install playwright && playwright install chromium
+playwright>=1.40.0
+
+# 方案2: WeasyPrint (轻量级备选)
+weasyprint>=60.0
+
+# ============================================
+# DOCX生成 (从HTML转换)
+# ============================================
+# 方案1: Pandoc (推荐，效果最好)
+# 需要先安装pandoc: https://pandoc.org/installing.html
+pypandoc>=1.11
+
+# 方案2: htmldocx (纯Python备选)
+htmldocx>=0.0.6
+python-docx>=0.8.11

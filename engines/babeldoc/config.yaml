@@ -1,0 +1,39 @@
+# BabelDOC独立工作流配置文件
+
+# API配置
+api:
+  # 翻译API配置
+  translation_api_key: ""
+  translation_api_base_url: "https://liangjiewis.com/v1"
+  translation_api_model: "gpt-4o-mini"
+
+# 路径配置
+paths:
+  input_base: "input/"           # 输入PDF目录
+  output_base: "output/"         # 输出目录
+  terminology_folder: "terminology/"  # 术语库目录
+
+# BabelDOC参数配置
+babeldoc:
+  # PDF输出模式（可多选）
+  pdf_modes:
+    - translated_only    # 生成纯译文PDF
+    - bilingual          # 生成双语对照PDF
+
+  # 双语PDF配置（仅在启用bilingual时生效）
+  bilingual_settings:
+    translated_first: true      # 译文在前（左侧或奇数页）
+    alternating_pages: false    # false=并排显示, true=交替页面
+    watermark: false            # 是否添加水印
+
+  # 并发和性能
+  qps: 50                       # 翻译QPS（每秒请求数）
+
+  # 其他选项
+  skip_scanned_detection: true  # 跳过扫描PDF检测
+
+# 批处理配置
+batch:
+  max_concurrent_files: 10       # 同时处理的PDF文件数
+  resume_enabled: true          # 启用断点续传
+

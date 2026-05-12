@@ -468,6 +468,21 @@ class MagazineWorkflow:
             print(f"\n[OK] 已选择: 批量并发模式")
 
     def confirm_and_execute(self):
+        violations = UserConfig.validate()
+        errors = [v for v in violations if v.severity == "error"]
+        warnings_list = [v for v in violations if v.severity == "warning"]
+
+        if warnings_list:
+            for w in warnings_list:
+                print(f"[配置警告] {w.attribute}: {w.message}")
+
+        if errors:
+            print("\n[配置错误] 启动前配置检查失败:")
+            for e in errors:
+                print(f"  - {e.attribute}: {e.message}")
+            print("\n请在 config.py 的 UserConfig 类中修复以上配置项后重新运行。")
+            return False
+
         pdf_api_key = UserConfig.PDF_API_KEY or os.getenv("OPENAI_API_KEY")
         pdf_base_url = UserConfig.PDF_API_BASE_URL
         pdf_model = UserConfig.PDF_API_MODEL

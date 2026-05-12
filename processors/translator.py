@@ -1,7 +1,7 @@
 
 import re
 import time
-from typing import Optional, Dict
+from typing import Optional, Dict, Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import pandas as pd
@@ -11,6 +11,12 @@ from tqdm import tqdm
 from config import UserConfig, Constants
 from core.logger import HeartbeatMonitor, LoggerManager, ConsoleOutput, NetworkErrorHandler, UnifiedRetryPolicy
 from core.logger import JSONLWriter
+from core.translation_result import (
+    TranslationResult, TranslationStatus, TranslationError, ErrorCategory,
+    success_result, error_result,
+)
+from core.llm_client import LLMClient, HttpLLMClient
+from core.metrics import MetricsCollector
 
 class ArticleTranslator:
     
@@ -28,7 +34,9 @@ class ArticleTranslator:
         retry_delay: int = None,
         max_workers: int = None,
         log_dir: str = None,
-        api_semaphore = None
+        api_semaphore = None,
+        llm_client: Optional[LLMClient] = None,
+        _llm_override: Optional[Callable[[str], str]] = None,
     ):
         self.api_key = api_key
         self.api_url = (api_url or UserConfig.TRANSLATION_API_BASE_URL).rstrip('/')
@@ -46,11 +54,14 @@ class ArticleTranslator:
         self.log_dir = Path(log_dir) if log_dir else None
         self.api_semaphore = api_semaphore
 
-        self.session = requests.Session()
-        self.session.headers.update({
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
-        })
+        self._llm_override = _llm_override
+
+        if llm_client is not None:
+            self._llm = llm_client
+        else:
+            self._llm = HttpLLMClient(api_key=self.api_key, api_base_url=self.api_url)
+
+        self.metrics = MetricsCollector()
 
         self.failure_stats = {
             'network_error': 0,
@@ -87,55 +98,38 @@ class ArticleTranslator:
         if max_tokens is None:
             max_tokens = UserConfig.TRANSLATION_MAX_TOKENS
             
-        headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json"
-        }
-        
         messages = []
-        
+
         if use_system_prompt:
             messages.append({
                 "role": "system",
                 "content": UserConfig.TRANSLATION_SYSTEM_PROMPT
             })
-        
+
         messages.append({
             "role": "user",
             "content": prompt
         })
-        
-        payload = {
-            "model": self.model,
-            "messages": messages,
-            "temperature": temperature,
-            "max_tokens": max_tokens
-        }
-        
+
+        def _do_chat():
+            return self._llm.chat_completion(
+                messages=messages,
+                model=self.model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                timeout=UserConfig.TRANSLATION_TIMEOUT,
+            )
+
         last_error = None
         for attempt in range(self.max_retries):
             try:
                 if self.api_semaphore:
                     with self.api_semaphore:
-                        response = self.session.post(
-                            self.chat_endpoint,
-                            headers=headers,
-                            json=payload,
-                            timeout=UserConfig.TRANSLATION_TIMEOUT,
-                            verify=True
-                        )
+                        response_data = _do_chat()
                 else:
-                    response = self.session.post(
-                        self.chat_endpoint,
-                        headers=headers,
-                        json=payload,
-                        timeout=UserConfig.TRANSLATION_TIMEOUT,
-                        verify=True
-                    )
+                    response_data = _do_chat()
 
-                response.raise_for_status()
-
-                result = response.json()
+                result = response_data['raw_response']
 
                 from core.logger import APIResponseValidator
 
@@ -433,10 +427,15 @@ class ArticleTranslator:
 
         return '\n\n'.join(translated_chunks)
 
-    def translate_text(self, text: str, field_name: str = "内容", article_idx: int = None) -> str:
+    def translate_text(self, text: str, field_name: str = "内容", article_idx: int = None) -> TranslationResult:
+        start_ts = time.perf_counter()
+
         if not text or pd.isna(text) or text.strip() == '':
-            return ''
-        
+            result = error_result(TranslationStatus.EMPTY_INPUT, ErrorCategory.VALIDATION,
+                                  "Empty input", text or '')
+            self.metrics.record(result)
+            return result
+
         text_length = len(text)
         max_chars = getattr(UserConfig, 'TRANSLATION_CONTENT_MAX_CHARS', 8000)
         if field_name == "正文" and text_length > max_chars:
@@ -444,10 +443,13 @@ class ArticleTranslator:
             ConsoleOutput.warning(
                 f"{article_info}{field_name}过长({text_length}字符)，分块翻译...", 3
             )
-            return self._translate_long_text(text, field_name, article_idx, max_chars)
+            legacy = self._translate_long_text(text, field_name, article_idx, max_chars)
+            result = success_result(legacy, latency_ms=(time.perf_counter() - start_ts) * 1000)
+            self.metrics.record(result)
+            return result
 
         modified_text, _ = self.apply_glossary(text, show_log=False)
-        
+
         if field_name in ["标题", "副标题"]:
             prompt = UserConfig.TRANSLATION_TITLE_PROMPT.format(
                 field_name=field_name,
@@ -462,8 +464,20 @@ class ArticleTranslator:
                 text=modified_text
             )
 
+        if self._llm_override is not None:
+            try:
+                result_text = self._llm_override(modified_text)
+                result = success_result(result_text, latency_ms=(time.perf_counter() - start_ts) * 1000)
+                self.metrics.record(result)
+                return result
+            except Exception as e:
+                result = error_result(TranslationStatus.LLM_ERROR, ErrorCategory.UNKNOWN,
+                                      str(e), text, latency_ms=(time.perf_counter() - start_ts) * 1000)
+                self.metrics.record(result)
+                return result
+
         from core.logger import ResponseValidator
-        
+
         max_retries = 3
         for attempt in range(max_retries):
             try:
@@ -471,9 +485,9 @@ class ArticleTranslator:
                 if attempt > 0:
                     warning = "\n\n【重要警告】前一次翻译与原文完全相同！这是不可接受的。请务必将所有内容翻译成中文，包括人名、地名等专有名词。译文不能与原文相同！"
                     current_prompt = prompt + warning
-                
+
                 translation = self._call_llm(current_prompt)
-            
+
                 is_valid, reason = ResponseValidator.validate_translation(text, translation)
 
                 if not is_valid:
@@ -488,10 +502,14 @@ class ArticleTranslator:
                         ConsoleOutput.error(f"{field_name}翻译验证始终失败，使用原文", 2)
                         self.logger.error(f"翻译验证最终失败 - 字段: {field_name}, 原因: {reason}, "
                                          f"原文前100字符: {text[:100]}")
-                        return f"[验证失败-原文] {text}"
-                
+                        result = error_result(TranslationStatus.VALIDATION_FAILED, ErrorCategory.VALIDATION,
+                                              reason, text, retry_count=attempt + 1,
+                                              latency_ms=(time.perf_counter() - start_ts) * 1000)
+                        self.metrics.record(result)
+                        return result
+
                 final_translation = self.clean_translation_output(translation)
-                
+
                 if final_translation.strip() == text.strip():
                     ConsoleOutput.warning(f"{field_name}翻译结果与原文完全相同（尝试{attempt+1}/{max_retries}）", 2)
                     self.logger.warning(f"译文与原文相同 - 字段: {field_name}, 尝试: {attempt+1}/{max_retries}, "
@@ -504,9 +522,16 @@ class ArticleTranslator:
                         ConsoleOutput.error(f"{field_name}翻译始终与原文相同，标记为需要人工检查", 2)
                         self.logger.error(f"译文与原文相同最终失败 - 字段: {field_name}, "
                                          f"原文前100字符: {text[:100]}")
-                        return f"[需人工检查-译文与原文相同] {text}"
+                        result = error_result(TranslationStatus.IDENTICAL_TO_SOURCE, ErrorCategory.IDENTICAL,
+                                              "Translation identical to source", text, retry_count=attempt + 1,
+                                              latency_ms=(time.perf_counter() - start_ts) * 1000)
+                        self.metrics.record(result)
+                        return result
 
-                return final_translation
+                result = success_result(final_translation, retry_count=attempt,
+                                        latency_ms=(time.perf_counter() - start_ts) * 1000)
+                self.metrics.record(result)
+                return result
 
             except Exception as e:
                 ConsoleOutput.warning(f"{field_name}翻译失败（尝试{attempt+1}/{max_retries}）: {str(e)}", 2)
@@ -564,7 +589,11 @@ class ArticleTranslator:
                 else:
                     self.logger.error(f"翻译最终失败 - 字段: {field_name}, 错误: {str(e)}, "
                                      f"原文前100字符: {text[:100]}")
-                    return f"[翻译失败: {str(e)}]"
+                    result = error_result(TranslationStatus.LLM_ERROR, ErrorCategory.UNKNOWN,
+                                          str(e), text, retry_count=attempt + 1,
+                                          latency_ms=(time.perf_counter() - start_ts) * 1000)
+                    self.metrics.record(result)
+                    return result
 
     def translate_article_batch(self, article: pd.Series, article_idx: int = 0) -> Dict[str, str]:
         import json
@@ -676,22 +705,22 @@ class ArticleTranslator:
                 ConsoleOutput.warning(f"使用单字段翻译模式（降级方案）", 3)
 
                 if title and not pd.isna(title):
-                    translated['title_zh'] = self.translate_text(title, "标题", article_idx)
+                    translated['title_zh'] = self.translate_text(title, "标题", article_idx).to_legacy_string()
                 else:
                     translated['title_zh'] = ''
 
                 if subtitle and not pd.isna(subtitle) and str(subtitle).strip():
-                    translated['subtitle_zh'] = self.translate_text(subtitle, "副标题", article_idx)
+                    translated['subtitle_zh'] = self.translate_text(subtitle, "副标题", article_idx).to_legacy_string()
                 else:
                     translated['subtitle_zh'] = ''
 
                 if authors and not pd.isna(authors) and str(authors).strip():
-                    translated['authors_zh'] = self.translate_text(authors, "作者", article_idx)
+                    translated['authors_zh'] = self.translate_text(authors, "作者", article_idx).to_legacy_string()
                 else:
                     translated['authors_zh'] = ''
 
                 if content and not pd.isna(content):
-                    translated['content_zh'] = self.translate_text(content, "正文", article_idx)
+                    translated['content_zh'] = self.translate_text(content, "正文", article_idx).to_legacy_string()
                 else:
                     translated['content_zh'] = ''
 
@@ -709,7 +738,7 @@ class ArticleTranslator:
                         description = description.strip()
 
                         if description:
-                            translated_img['description_zh'] = self.translate_text(description, "图片描述", article_idx)
+                            translated_img['description_zh'] = self.translate_text(description, "图片描述", article_idx).to_legacy_string()
                             self.logger.debug(f"  图片{img_idx}: description翻译完成 ({len(description)}→{len(translated_img['description_zh'])}字符)")
                         else:
                             translated_img['description_zh'] = ''
@@ -721,7 +750,7 @@ class ArticleTranslator:
                         relevance = relevance.strip()
 
                         if relevance:
-                            translated_img['relevance_zh'] = self.translate_text(relevance, "图片相关性", article_idx)
+                            translated_img['relevance_zh'] = self.translate_text(relevance, "图片相关性", article_idx).to_legacy_string()
                             self.logger.debug(f"  图片{img_idx}: relevance翻译完成 ({len(relevance)}→{len(translated_img['relevance_zh'])}字符)")
                         else:
                             translated_img['relevance_zh'] = ''
@@ -732,7 +761,7 @@ class ArticleTranslator:
                         anchor_text = anchor_text.strip()
 
                         if anchor_text:
-                            translated_img['anchor_text_zh'] = self.translate_text(anchor_text, "图片锚点文本", article_idx)
+                            translated_img['anchor_text_zh'] = self.translate_text(anchor_text, "图片锚点文本", article_idx).to_legacy_string()
                             self.logger.debug(f"  图片{img_idx}: anchor_text翻译完成 ({len(anchor_text)}→{len(translated_img['anchor_text_zh'])}字符)")
                         else:
                             translated_img['anchor_text_zh'] = ''
@@ -938,7 +967,7 @@ class ArticleTranslator:
                         description,
                         "封面图片描述",
                         img_idx
-                    )
+                    ).to_legacy_string()
                     translated_count += 1
                 except Exception as e:
                     failed_count += 1
@@ -952,7 +981,7 @@ class ArticleTranslator:
                         relevance,
                         "封面图片相关性",
                         img_idx
-                    )
+                    ).to_legacy_string()
                 except Exception as e:
                     img['relevance_zh'] = f"[翻译失败: {str(e)[:30]}]"
                     self.logger.warning(f"⚠️  封面图{img_idx}相关性翻译失败: {str(e)[:50]}")

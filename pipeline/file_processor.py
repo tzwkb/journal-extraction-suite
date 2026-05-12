@@ -1037,6 +1037,13 @@ class BatchFileProcessor:
                 return {'success': False, 'df': None, 'error': error_msg, 'skipped': False}
             else:
                 self.safe_logger.safe_print(f"{prefix} [翻译] ✅ 完成（{len(df)}/{len(df)} 篇成功）")
+                if self.translator.metrics.total_requests > 0:
+                    self.safe_logger.safe_print(
+                        f"{prefix} [翻译] 📊 API调用 {snapshot.total_requests} 次, "
+                        f"成功率 {snapshot.success_count/snapshot.total_requests*100:.1f}%, "
+                        f"平均延迟 {snapshot.average_latency_ms:.0f}ms, "
+                        f"P95 {snapshot.p95_latency_ms:.0f}ms"
+                    )
 
             try:
                 self.translator.translate_cover_images(file_name)

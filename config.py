@@ -159,6 +159,11 @@ class UserConfig:
         'stats_interval': 30,
     }
 
+    @staticmethod
+    def validate():
+        from core.config_validator import ConfigValidator
+        return ConfigValidator.validate(UserConfig)
+
     IMAGE_MIN_FILE_SIZE = 10 * 1024
     IMAGE_MIN_WIDTH = 400
     IMAGE_MIN_HEIGHT = 300

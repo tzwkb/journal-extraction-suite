@@ -46,18 +46,18 @@ class Constants:
     MARKDOWN_CODE_BLOCK_END_PATTERN = r'\n```\s*$'
 
 class UserConfig:
-    
-    
-    
-    PDF_API_KEY = "sk-mQVaSBa9k2hu3iNTMziOTNwOPYqDu73EC77QwA5X0uz8R4cp"
+
+    import os as _os
+
+    PDF_API_KEY = _os.getenv("JOURNAL_API_KEY")
     PDF_API_BASE_URL = "https://liangjiewis.com/v1"
     PDF_API_MODEL = "gemini-2.5-flash"
 
-    TRANSLATION_API_KEY = "sk-mQVaSBa9k2hu3iNTMziOTNwOPYqDu73EC77QwA5X0uz8R4cp"
+    TRANSLATION_API_KEY = _os.getenv("JOURNAL_API_KEY")
     TRANSLATION_API_BASE_URL = "https://liangjiewis.com/v1"
     TRANSLATION_API_MODEL = "gemini-2.5-flash"
-    
-    HTML_API_KEY = "sk-mQVaSBa9k2hu3iNTMziOTNwOPYqDu73EC77QwA5X0uz8R4cp"
+
+    HTML_API_KEY = _os.getenv("JOURNAL_API_KEY")
     HTML_API_BASE_URL = "https://liangjiewis.com/v1"
     HTML_API_MODEL = "gemini-2.5-flash"
 

@@ -1,7 +1,9 @@
 # 📚 期刊文章提取与翻译系统
 
-[English](README.md) | 中文
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
 
+[English](README.md) | 中文
 
 **基于AI的智能期刊处理工具** - 自动提取、翻译、格式转换一站式解决方案
 

@@ -1,6 +1,11 @@
-[中文文档](README_ZH.md)
-
 # Journal Extraction Suite
+
+[![Version](https://img.shields.io/badge/version-2.12.2-blue.svg)](https://github.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
+
+English | [中文](README_ZH.md)
+
 
 English | [中文](README_ZH.md)
 

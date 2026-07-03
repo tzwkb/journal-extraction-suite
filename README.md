@@ -157,6 +157,58 @@ output/
 
 ---
 
+## Documentation Map
+
+The Chinese README contains a fuller navigation map for user guides, technical documents, and topic-specific guides. This English README keeps the same operational areas: extraction, parsing, image handling, translation, cache-first resume, and export.
+
+## Core Feature Coverage
+
+- Smart article extraction and structure recognition.
+- Image-aware processing for article assets.
+- Professional translation workflows.
+- Multi-format output generation.
+- Cache-first resume and error handling for long extraction jobs.
+
+## English Navigation
+
+### User Guides
+
+User-facing documentation covers how to run extraction jobs, inspect outputs, resume interrupted work, and understand generated files.
+
+### Technical Documents
+
+Technical notes cover crawler behavior, parser structure, cache strategy, image processing, translation handling, and exporter behavior.
+
+### Topic Guides
+
+Topic-specific guides should be used for performance tuning, cache-first resume, image-heavy articles, translation settings, and troubleshooting.
+
+### Feature Areas
+
+The main feature areas are article discovery, content extraction, structure recognition, image handling, translation, multi-format export, cache/resume, and error recovery.
+
+## Chinese README Section Map
+
+### Table of Contents
+
+The Chinese README includes a detailed table of contents. The equivalent English entry points are Features, Quick Start, Project Structure, Configuration, Output Structure, Documentation, and the navigation sections below.
+
+### Documentation Navigation
+
+User guides map to run instructions and output inspection. Technical documents map to crawler, parser, cache, image, translation, and exporter internals. Topic guides map to performance, resume, image-heavy extraction, translation, and troubleshooting notes.
+
+### Core Characteristics
+
+The Chinese feature sections correspond to smart recognition, image handling, professional translation, multi-format output, cache-first resume, and comprehensive error handling.
+
+### Performance and Recovery
+
+Cache-first resume is central for long article extraction jobs. A failed or interrupted run should reuse cached work where possible rather than restarting the full extraction.
+
+### Output and Delivery
+
+Output structure should make article text, images, translated content, and exported formats easy to inspect separately.
+
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.

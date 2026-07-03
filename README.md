@@ -2,6 +2,45 @@
 
 # Journal Extraction Suite
 
+<!-- bilingual-readme:start -->
+
+## 双语说明 / Bilingual Documentation
+
+> 本节提供整篇 README 的中英双语维护说明；下方保留原始详细说明、命令、路径和配置示例。
+> This section provides bilingual maintenance notes for the full README; the original detailed notes, commands, paths, and configuration examples are preserved below.
+
+### 中文
+
+**概览**：期刊文章提取、翻译和格式化套件，支持从 PDF/DOCX 中抽取内容并进入翻译处理流程。
+
+**主要能力**：
+- 提供多引擎文献提取流程。
+- 支持文章翻译和格式整理。
+- 已有 README_ZH.md，同时 README.md 也提供双语说明。
+
+**使用方式**：按下方依赖和命令说明选择输入文件、引擎和输出路径。
+
+**状态**：该仓库仍按当前 README 的说明维护或使用。
+
+**注意事项**：保留 README_ZH.md 作为中文详细文档入口。
+
+### English
+
+**Overview**: Journal article extraction, translation, and formatting suite for processing PDF/DOCX sources into translation-ready outputs.
+
+**Key capabilities**:
+- Provides a multi-engine article extraction workflow.
+- Supports translation and formatting of academic content.
+- Keeps README_ZH.md while also making README.md bilingual.
+
+**Usage**: Follow the dependency and command notes below to choose input files, engines, and output paths.
+
+**Status**: This repository is maintained or used according to the current README notes.
+
+**Notes**: README_ZH.md remains available as a detailed Chinese documentation entry.
+
+<!-- bilingual-readme:end -->
+
 AI-powered pipeline for extracting, translating, and formatting academic journal articles from PDF and DOCX files.
 
 <div align="center">

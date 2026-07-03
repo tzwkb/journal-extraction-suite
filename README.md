@@ -2,7 +2,7 @@
 
 # Journal Extraction Suite
 
-[中文](README_ZH.md) | English
+English | [中文](README_ZH.md)
 
 
 AI-powered pipeline for extracting, translating, and formatting academic journal articles from PDF and DOCX files.

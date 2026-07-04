@@ -7,18 +7,7 @@
 English | [中文](README_ZH.md)
 
 
-English | [中文](README_ZH.md)
-
-
 AI-powered pipeline for extracting, translating, and formatting academic journal articles from PDF and DOCX files.
-
-<div align="center">
-
-[![Version](https://img.shields.io/badge/version-2.12.2-blue.svg)](https://github.com)
-[![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://www.python.org)
-[![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
-
-</div>
 
 ---
 

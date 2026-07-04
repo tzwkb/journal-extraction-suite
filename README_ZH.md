@@ -7,16 +7,6 @@
 
 **基于AI的智能期刊处理工具** - 自动提取、翻译、格式转换一站式解决方案
 
-<div align="center">
-
-[![Version](https://img.shields.io/badge/version-2.12.2-blue.svg)](https://github.com)
-[![Python](https://img.shields.io/badge/python-3.8+-green.svg)](https://www.python.org)
-[![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
-
-[English](README.md)
-
-</div>
-
 ---
 
 ## 📑 目录
